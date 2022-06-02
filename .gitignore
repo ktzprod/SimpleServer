@@ -33,3 +33,6 @@
 
 # Build
 [Bb]uild
+
+# IDE
+.vscode
