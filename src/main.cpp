@@ -49,5 +49,11 @@ int main(int argc, char** argv)
     }
 
     print_args(listening_ip, listening_port);
+
+    auto server = Connectivity::Server::create(listening_ip, listening_port);
+    if (server) {
+        std::cout << "server created successfully" << std::endl;
+    }
+
     return 0;
 }
