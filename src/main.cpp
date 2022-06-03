@@ -1,6 +1,7 @@
 #include <iostream>
 #include <thread>
 #include <signal.h>
+#include <string>
 #include <vector>
 
 #include "server.h"
@@ -80,9 +81,27 @@ int main(int argc, char** argv)
     std::cout << "server created successfully" << std::endl;
 
     std::vector<Client> clients;
-    bool should_keep_going = true;
-    while (should_keep_going) {
 
+    auto on_send_failure = [&clients](const std::vector<Client>::iterator& it) {
+        std::cerr << "client seems disconnected" << std::endl;
+        return clients.erase(it);
+    };
+
+    auto send_to_all_clients = [&on_send_failure, &clients](const std::string& msg)
+    {
+        for (auto it = clients.begin(); it != clients.end(); ) {
+            const auto& client = *it;
+            if (!client->send(msg.c_str(), sizeof(char) * msg.size())) {
+                it = on_send_failure(it);
+            } else {
+                it++;
+            }
+        }
+    };
+
+    bool should_keep_going = true;
+    while (should_keep_going)
+    {
         // make sure moved client is not gonna be used outside
         // of this scope
         {
