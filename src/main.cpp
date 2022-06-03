@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "server.h"
+#include "validator.h"
 
 #define INVALID_ARGUMENT -1
 #define MISSING_ARGUMENT -2
@@ -42,14 +43,12 @@ int check_args(const std::string& listening_ip, const std::string& listening_por
         return INVALID_ARGUMENT;
     }
 
-    std::regex is_number_regex(R"(^^\s*[-+]?((\d+(\.\d+)?)|(\d+\.)|(\.\d+))(e[-+]?\d+)?\s*$)");
-    if (!std::regex_match(listening_port, is_number_regex)) {
-        std::cerr << "listening port is not a number" << std::endl;
+    if (!Connectivity::Validator::is_valid_port(listening_port)) {
+        std::cerr << "listening port is not valid" << std::endl;
         return INVALID_ARGUMENT;
     }
 
-    std::regex is_ip_regex("(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])");
-    if (!std::regex_match(listening_ip, is_ip_regex)) {
+    if (!Connectivity::Validator::is_valid_ipv4(listening_ip)) {
         std::cerr << "listening ip is not a valid IPv4 address" << std::endl;
         return INVALID_ARGUMENT;
     }
