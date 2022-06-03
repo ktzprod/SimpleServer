@@ -1,5 +1,6 @@
 #include <iostream>
 #include <thread>
+#include <regex>
 #include <signal.h>
 #include <string>
 #include <vector>
@@ -38,6 +39,12 @@ int check_args(const std::string& listening_ip, const std::string& listening_por
 {
     if (listening_ip.empty() || listening_port.empty()) {
         std::cerr << "arguments must not be empty" << std::endl;
+        return INVALID_ARGUMENT;
+    }
+
+    std::regex is_number_regex(R"(^^\s*[-+]?((\d+(\.\d+)?)|(\d+\.)|(\.\d+))(e[-+]?\d+)?\s*$)");
+    if (!std::regex_match(listening_port, is_number_regex)) {
+        std::cerr << "listening port is not a number" << std::endl;
         return INVALID_ARGUMENT;
     }
 
