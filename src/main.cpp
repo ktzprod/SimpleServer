@@ -1,5 +1,6 @@
 #include <iostream>
 #include <thread>
+#include <signal.h>
 
 #include "server.h"
 
@@ -30,6 +31,14 @@ void print_args(const std::string& listening_ip, const std::string& listening_po
     std::cout << "\t" << "listening_port: " << listening_port << std::endl;
 }
 
+static std::atomic_bool on_sig_int_flag = false;
+static void on_signal_handler(int sig)
+{
+    if (sig == SIGINT) {
+        on_sig_int_flag = true;
+    }
+}
+
 int main(int argc, char** argv)
 {
     if (argc == 2  && std::strcmp(argv[1], "-h") == 0) {
@@ -52,6 +61,12 @@ int main(int argc, char** argv)
 
     print_args(listening_ip, listening_port);
 
+    struct sigaction signal_handler;
+    signal_handler.sa_handler = &on_signal_handler;
+    sigemptyset(&signal_handler.sa_mask);
+    signal_handler.sa_flags = 0;
+    sigaction(SIGINT, &signal_handler, NULL);
+
     auto server = Connectivity::Server::create(listening_ip, listening_port);
     if (!server) {
         std::cerr << "failed to create server with the given arguments" << std::endl;
@@ -66,6 +81,11 @@ int main(int argc, char** argv)
         if (client) {
             std::cout << "new connection detected" << std::endl;
             received_client = true;
+        }
+
+        if (on_sig_int_flag) {
+            std::cerr << "catch termination signal" << std::endl;
+            break;
         }
 
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
