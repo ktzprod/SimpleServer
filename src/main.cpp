@@ -113,6 +113,13 @@ int main(int argc, char** argv)
             }
         }
 
+        const auto epoch = std::chrono::duration_cast<std::chrono::milliseconds>(
+            std::chrono::system_clock::now().time_since_epoch()
+        );
+
+        const std::string epoch_str = std::to_string(epoch.count()) + "\n";
+        send_to_all_clients(epoch_str);
+
         if (on_sig_int_flag) {
             std::cerr << "catch termination signal" << std::endl;
             send_to_all_clients("bye\n");
