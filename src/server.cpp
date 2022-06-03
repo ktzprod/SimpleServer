@@ -1,5 +1,6 @@
 #include <arpa/inet.h>
 #include <cerrno>
+#include <fcntl.h>
 #include <netdb.h>
 #include <sys/socket.h>
 #include <sys/types.h>
@@ -64,6 +65,21 @@ namespace Connectivity {
         res = listen(server_socket, 99);
         if (res == -1) {
             return on_error("Error while binding socket");
+        }
+
+        int flags = fcntl(server_socket, F_GETFL, 0);
+        if (flags == -1)
+        {
+            return on_error("Error while probing flags for socket");
+        }
+
+        // non-blocking will allow us to not block when accepting clients
+        flags |= O_NONBLOCK;
+
+        res = fcntl(server_socket, F_SETFL, flags);
+        if (res == -1)
+        {
+            return on_error("Failed to modify socket to be non-blocking");
         }
 
         freeaddrinfo(p);
