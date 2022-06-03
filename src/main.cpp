@@ -34,6 +34,16 @@ void print_args(const std::string& listening_ip, const std::string& listening_po
     std::cout << "\t" << "listening_port: " << listening_port << std::endl;
 }
 
+int check_args(const std::string& listening_ip, const std::string& listening_port)
+{
+    if (listening_ip.empty() || listening_port.empty()) {
+        std::cerr << "arguments must not be empty" << std::endl;
+        return INVALID_ARGUMENT;
+    }
+
+    return 0;
+}
+
 static std::atomic_bool on_sig_int_flag = false;
 static void on_signal_handler(int sig)
 {
@@ -59,9 +69,8 @@ int main(int argc, char** argv)
     const std::string listening_ip = argv[1];
     const std::string listening_port = argv[2];
 
-    if (listening_ip.empty() || listening_port.empty()) {
-        std::cerr << "arguments must not be empty" << std::endl;
-        return INVALID_ARGUMENT;
+    if (int result = check_args(listening_ip, listening_port); result < 0) {
+        return result;
     }
 
     print_args(listening_ip, listening_port);
