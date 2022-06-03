@@ -48,6 +48,12 @@ int check_args(const std::string& listening_ip, const std::string& listening_por
         return INVALID_ARGUMENT;
     }
 
+    std::regex is_ip_regex("(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])");
+    if (!std::regex_match(listening_ip, is_ip_regex)) {
+        std::cerr << "listening ip is not a valid IPv4 address" << std::endl;
+        return INVALID_ARGUMENT;
+    }
+
     return 0;
 }
 
