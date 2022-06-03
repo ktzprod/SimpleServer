@@ -1,6 +1,7 @@
 #include <iostream>
 #include <thread>
 #include <signal.h>
+#include <vector>
 
 #include "server.h"
 
@@ -78,11 +79,18 @@ int main(int argc, char** argv)
 
     std::cout << "server created successfully" << std::endl;
 
+    std::vector<Client> clients;
     bool should_keep_going = true;
     while (should_keep_going) {
-        Client client = server->accept_new_client();
-        if (client) {
-            std::cout << "new connection detected" << std::endl;
+
+        // make sure moved client is not gonna be used outside
+        // of this scope
+        {
+            Client client = server->accept_new_client();
+            if (client) {
+                std::cout << "new connection detected" << std::endl;
+                clients.push_back(std::move(client));
+            }
         }
 
         if (on_sig_int_flag) {
