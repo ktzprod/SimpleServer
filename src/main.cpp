@@ -75,17 +75,16 @@ int main(int argc, char** argv)
 
     std::cout << "server created successfully" << std::endl;
 
-    bool received_client = false;
-    while (!received_client) {
+    bool should_keep_going = true;
+    while (should_keep_going) {
         auto client = server->accept_new_client();
         if (client) {
             std::cout << "new connection detected" << std::endl;
-            received_client = true;
         }
 
         if (on_sig_int_flag) {
             std::cerr << "catch termination signal" << std::endl;
-            break;
+            should_keep_going = false;
         }
 
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
