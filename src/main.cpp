@@ -124,6 +124,7 @@ int main(int argc, char** argv)
             std::cerr << "catch termination signal" << std::endl;
             send_to_all_clients("bye\n");
             should_keep_going = false;
+            clients.clear();
         }
 
         std::this_thread::sleep_for(std::chrono::seconds(1));
