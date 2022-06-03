@@ -40,6 +40,7 @@ static void on_signal_handler(int sig)
 }
 
 using Server = std::unique_ptr<Connectivity::Server>;
+using Client = std::unique_ptr<Connectivity::Client>;
 
 int main(int argc, char** argv)
 {
@@ -79,7 +80,7 @@ int main(int argc, char** argv)
 
     bool should_keep_going = true;
     while (should_keep_going) {
-        auto client = server->accept_new_client();
+        Client client = server->accept_new_client();
         if (client) {
             std::cout << "new connection detected" << std::endl;
         }
