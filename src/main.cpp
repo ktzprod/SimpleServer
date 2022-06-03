@@ -108,6 +108,7 @@ int main(int argc, char** argv)
             Client client = server->accept_new_client();
             if (client) {
                 std::cout << "new connection detected" << std::endl;
+                client->send("hey\n", sizeof(char) * 4);
                 clients.push_back(std::move(client));
             }
         }
