@@ -39,6 +39,8 @@ static void on_signal_handler(int sig)
     }
 }
 
+using Server = std::unique_ptr<Connectivity::Server>;
+
 int main(int argc, char** argv)
 {
     if (argc == 2  && std::strcmp(argv[1], "-h") == 0) {
@@ -67,7 +69,7 @@ int main(int argc, char** argv)
     signal_handler.sa_flags = 0;
     sigaction(SIGINT, &signal_handler, NULL);
 
-    auto server = Connectivity::Server::create(listening_ip, listening_port);
+    Server server = Connectivity::Server::create(listening_ip, listening_port);
     if (!server) {
         std::cerr << "failed to create server with the given arguments" << std::endl;
         return SERVER_FAILURE;
