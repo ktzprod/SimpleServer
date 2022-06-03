@@ -1,4 +1,5 @@
 #include <arpa/inet.h>
+#include <cerrno>
 #include <netdb.h>
 #include <sys/socket.h>
 #include <sys/types.h>
@@ -49,7 +50,7 @@ namespace Connectivity {
         }
 
         auto on_error = [&server_socket, &p](const std::string& error) {
-            std::cerr << error << std::endl;
+            std::cerr << "message: " << error << " error: " << strerror(errno) << std::endl;
             close(server_socket);
             freeaddrinfo(p);
             return nullptr;
