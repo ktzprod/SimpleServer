@@ -18,6 +18,7 @@ namespace Connectivity {
 
         public:
 
+            // Factory
             static std::unique_ptr<Server> create(const std::string& ip, const std::string& port);
 
             // Public API
