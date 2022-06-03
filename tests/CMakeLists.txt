@@ -21,3 +21,4 @@ set(source_files
 file(GLOB test_files *.cpp)
 
 add_executable(${PROJECT_NAME} ${source_files} ${test_files})
+target_include_directories(${PROJECT_NAME} PRIVATE ../src)
