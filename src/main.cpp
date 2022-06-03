@@ -20,6 +20,7 @@ void print_help()
     std::cout << "Known errors:" << std::endl;
     std::cout << "\t" << "INVALID_ARGUMENT(" << INVALID_ARGUMENT << ")" << std::endl;
     std::cout << "\t" << "MISSING_ARGUMENT(" << MISSING_ARGUMENT << ")" << std::endl;
+    std::cout << "\t" << "SERVER_FAILURE(" << SERVER_FAILURE << ")" << std::endl;
     std::cout << std::endl;
 }
 
