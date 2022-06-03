@@ -4,6 +4,7 @@
 
 #define INVALID_ARGUMENT -1
 #define MISSING_ARGUMENT -2
+#define SERVER_FAILURE -3
 
 /**
  * @brief print how to use this program
@@ -51,9 +52,13 @@ int main(int argc, char** argv)
     print_args(listening_ip, listening_port);
 
     auto server = Connectivity::Server::create(listening_ip, listening_port);
-    if (server) {
-        std::cout << "server created successfully" << std::endl;
+    if (!server) {
+        std::cerr << "failed to create server with the given arguments" << std::endl;
+        return SERVER_FAILURE;
     }
+
+    std::cout << "server created successfully" << std::endl;
+
 
     return 0;
 }
