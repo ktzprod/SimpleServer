@@ -57,6 +57,12 @@ namespace Connectivity {
             return nullptr;
         };
 
+        int enable_reuseaddr = 1;
+        res = setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR, &enable_reuseaddr, sizeof(int));
+        if (res == -1) {
+            return on_error("failed to set option SO_REUSEADDR");
+        }
+
         res = bind(server_socket, p->ai_addr, p->ai_addrlen);
         if (res == -1) {
             return on_error("Error while binding socket");
