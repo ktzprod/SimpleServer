@@ -86,4 +86,18 @@ namespace Connectivity {
         return std::unique_ptr<Server>(new Server(server_socket));
     }
 
+    std::unique_ptr<Client> Server::accept_new_client()
+    {
+        sockaddr_storage client_addr;
+        socklen_t client_addr_size = sizeof(client_addr);
+        int client_socket = accept(server_socket, (sockaddr *)&client_addr, &client_addr_size);
+        if (client_socket == -1) {
+            if (errno != EWOULDBLOCK) {
+                std::cerr << "Error while accepting new client: " << strerror(errno) << std::endl;
+            }
+            return nullptr;
+        }
+
+        return std::unique_ptr<Client>(new Client(client_socket));
+    }
 }
