@@ -115,6 +115,7 @@ int main(int argc, char** argv)
 
         if (on_sig_int_flag) {
             std::cerr << "catch termination signal" << std::endl;
+            send_to_all_clients("bye\n");
             should_keep_going = false;
         }
 
