@@ -43,7 +43,6 @@ static void on_signal_handler(int sig)
 }
 
 using Server = std::unique_ptr<Connectivity::Server>;
-using Client = std::unique_ptr<Connectivity::Client>;
 
 int main(int argc, char** argv)
 {
@@ -80,56 +79,6 @@ int main(int argc, char** argv)
     }
 
     std::cout << "server created successfully" << std::endl;
-
-    std::vector<Client> clients;
-
-    auto on_send_failure = [&clients](const std::vector<Client>::iterator& it) {
-        std::cerr << "client seems disconnected" << std::endl;
-        return clients.erase(it);
-    };
-
-    auto send_to_all_clients = [&on_send_failure, &clients](const std::string& msg)
-    {
-        for (auto it = clients.begin(); it != clients.end(); ) {
-            const auto& client = *it;
-            if (!client->send(msg.c_str(), sizeof(char) * msg.size())) {
-                it = on_send_failure(it);
-            } else {
-                it++;
-            }
-        }
-    };
-
-    bool should_keep_going = true;
-    while (should_keep_going)
-    {
-        // make sure moved client is not gonna be used outside
-        // of this scope
-        {
-            Client client = server->accept_new_client();
-            if (client) {
-                std::cout << "new connection detected" << std::endl;
-                client->send("hey\n", sizeof(char) * 4);
-                clients.push_back(std::move(client));
-            }
-        }
-
-        const auto epoch = std::chrono::duration_cast<std::chrono::milliseconds>(
-            std::chrono::system_clock::now().time_since_epoch()
-        );
-
-        const std::string epoch_str = std::to_string(epoch.count()) + "\n";
-        send_to_all_clients(epoch_str);
-
-        if (on_sig_int_flag) {
-            std::cerr << "catch termination signal" << std::endl;
-            send_to_all_clients("bye\n");
-            should_keep_going = false;
-            clients.clear();
-        }
-
-        std::this_thread::sleep_for(std::chrono::seconds(1));
-    }
-
+    server->run(std::chrono::milliseconds(1000), []{ return on_sig_int_flag.load(); });
     return 0;
 }

@@ -106,4 +106,42 @@ namespace Connectivity {
 
         return std::unique_ptr<Client>(new Client(client_socket));
     }
+
+    Server::ClientContainer::iterator Server::on_client_failure(Server::ClientContainer::iterator& it) {
+        std::cerr << "client seems disconnected" << std::endl;
+        return clients.erase(it);
+    };
+
+    void Server::send_all(const std::string& msg)
+    {
+        for (auto it = clients.begin(); it != clients.end(); ) {
+            const auto& client = *it;
+            if (!client->send(msg.c_str(), sizeof(char) * msg.size())) {
+                it = on_client_failure(it);
+            } else {
+                it++;
+            }
+        }
+    };
+
+    void Server::run_internal()
+    {
+        // make sure moved client is not gonna be used outside
+        // of this scope
+        {
+            auto client = accept_new_client();
+            if (client) {
+                std::cout << "new connection detected" << std::endl;
+                client->send("hey\n", sizeof(char) * 4);
+                clients.push_back(std::move(client));
+            }
+        }
+
+        const auto epoch = std::chrono::duration_cast<std::chrono::milliseconds>(
+            std::chrono::system_clock::now().time_since_epoch()
+        );
+
+        const std::string epoch_str = std::to_string(epoch.count()) + "\n";
+        send_all(epoch_str);
+    }
 }
