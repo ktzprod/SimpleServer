@@ -1,4 +1,5 @@
 #include <iostream>
+#include <thread>
 
 #include "server.h"
 
@@ -59,6 +60,16 @@ int main(int argc, char** argv)
 
     std::cout << "server created successfully" << std::endl;
 
+    bool received_client = false;
+    while (!received_client) {
+        auto client = server->accept_new_client();
+        if (client) {
+            std::cout << "new connection detected" << std::endl;
+            received_client = true;
+        }
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
 
     return 0;
 }
