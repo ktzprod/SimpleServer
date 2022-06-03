@@ -14,3 +14,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 file(GLOB sources src/*.cpp)
 add_executable(${PROJECT_NAME} ${sources})
+
+# Build tests
+add_subdirectory(tests)
