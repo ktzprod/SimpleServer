@@ -1,9 +1,11 @@
 #include <arpa/inet.h>
 #include <cerrno>
+#include <cstring>
 #include <fcntl.h>
 #include <netdb.h>
 #include <sys/socket.h>
 #include <sys/types.h>
+#include <string.h>
 #include <unistd.h>
 
 #include <iostream>
